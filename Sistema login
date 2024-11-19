@@ -1,0 +1,63 @@
+stored_password_hash = None
+
+class Login(Tk):
+    def __init__(self):
+        super().__init__()
+        self.title("Login")
+        self.geometry("300x200")
+        self.resizable(False, False)
+        self.criar_widgets()
+
+    def criar_widgets(self):
+        Label(self, text="Digite a senha:", font=("Helvetica", 12)).pack(pady=10)
+        self.password_entry = Entry(self, show="*", font=("Helvetica", 12))
+        self.password_entry.pack(pady=5)
+
+        Button(self, text="Login", command=self.check_login).pack(pady=10)
+        Button(self, text="Registar", command=self.registo_aberto).pack()
+
+    def check_login(self):
+        global stored_password_hash
+        password = self.password_entry.get()
+        if stored_password_hash and checkpw(password.encode(), stored_password_hash):
+            messagebox.showinfo("Login", "Login válido!")
+        else:
+            messagebox.showerror("Login", "Senha inválida ou não registada!")
+
+    def registo_aberto(self):
+        self.destroy()
+        Registar().mainloop()
+
+class Registar(Tk):
+    def __init__(self):
+        super().__init__()
+        self.title("Registar")
+        self.geometry("300x200")
+        self.resizable(False, False)
+        self.criar_widgets()
+
+    def criar_widgets(self):
+        Label(self, text="Digite uma nova senha:", font=("Helvetica", 12)).pack(pady=10)
+        self.password_entry = Entry(self, show="*", font=("Helvetica", 12))
+        self.password_entry.pack(pady=5)
+
+        Button(self, text="Registar", command=self.registar).pack(pady=10)
+        Button(self, text="Voltar", command=self.retornar).pack()
+
+    def registar(self):
+        global stored_password_hash
+        password = self.password_entry.get()
+        if password:
+            stored_password_hash = hashpw(password.encode(), gensalt())
+            messagebox.showinfo("Registo", "Senha registada com sucesso!")
+            self.retornar()
+        else:
+            messagebox.showerror("Erro", "A senha não pode ser vazia!")
+
+    def retornar(self):
+        self.destroy()
+        Login().mainloop()
+
+# Iniciar o programa
+if __name__ == "__main__":
+    Login().mainloop()
